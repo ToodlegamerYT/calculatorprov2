@@ -3,172 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <title>CalculatorProV2</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
 <style>
 body {
-    font-family: Arial;
     background: #111;
-    color: white;
-    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial;
 }
-.container { padding: 20px; }
-.tabs button {
-    padding: 8px 12px;
-    margin: 4px;
+.calculator {
     background: #222;
-    color: white;
-    border: none;
-    cursor: pointer;
+    padding: 20px;
+    border-radius: 15px;
+    width: 350px;
 }
-.section { display: none; margin-top: 20px; }
-input, textarea {
+#display {
     width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 6px;
+    height: 60px;
+    font-size: 24px;
+    text-align: right;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
     border: none;
+    background: #000;
+    color: #0f0;
+}
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
 }
 button {
-    padding: 6px 10px;
-    margin: 5px 0;
-    border-radius: 6px;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
+    background: #333;
+    color: white;
 }
-.output {
-    background: #222;
-    padding: 10px;
-    border-radius: 6px;
-    min-height: 40px;
+button:hover {
+    background: #555;
+}
+.equal {
+    background: #0a84ff;
+}
+.equal:hover {
+    background: #0066cc;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-<h1>Stable Ultimate Math Lab</h1>
+<div class="calculator">
+<input type="text" id="display">
 
-<div class="tabs">
-<button onclick="showTab('calc')">Calculator</button>
-<button onclick="showTab('symbolic')">Symbolic</button>
-<button onclick="showTab('graph')">2D Graph</button>
-<button onclick="showTab('matrix')">Matrix</button>
+<div class="buttons">
+<button onclick="clearDisplay()">C</button>
+<button onclick="backspace()">⌫</button>
+<button onclick="append('%')">%</button>
+<button onclick="append('/')">÷</button>
+<button onclick="append('Math.PI')">π</button>
+
+<button onclick="append('7')">7</button>
+<button onclick="append('8')">8</button>
+<button onclick="append('9')">9</button>
+<button onclick="append('*')">×</button>
+<button onclick="append('**')">^</button>
+
+<button onclick="append('4')">4</button>
+<button onclick="append('5')">5</button>
+<button onclick="append('6')">6</button>
+<button onclick="append('-')">−</button>
+<button onclick="append('Math.sqrt(')">√</button>
+
+<button onclick="append('1')">1</button>
+<button onclick="append('2')">2</button>
+<button onclick="append('3')">3</button>
+<button onclick="append('+')">+</button>
+<button onclick="append('Math.log10(')">log</button>
+
+<button onclick="append('0')">0</button>
+<button onclick="append('.')">.</button>
+<button onclick="append('Math.sin(')">sin</button>
+<button onclick="append('Math.cos(')">cos</button>
+<button onclick="append('Math.tan(')">tan</button>
+
+<button class="equal" style="grid-column: span 5;" onclick="calculate()">=</button>
 </div>
-
-<!-- Calculator -->
-<div id="calc" class="section">
-<h2>Calculator</h2>
-<input id="calcInput" placeholder="Example: 1+1 or sin(45 deg)">
-<button onclick="calculate()">Calculate</button>
-<div id="calcOutput" class="output"></div>
-</div>
-
-<!-- Symbolic -->
-<div id="symbolic" class="section">
-<h2>Symbolic Math</h2>
-<input id="symbolicInput" placeholder="Example: x^3 + 2*x">
-<button onclick="differentiate()">Differentiate</button>
-<button onclick="integrate()">Integrate</button>
-<div id="symbolicOutput" class="output"></div>
-</div>
-
-<!-- Graph -->
-<div id="graph" class="section">
-<h2>2D Graph</h2>
-<input id="graphInput" placeholder="Example: x^2 + 2*x">
-<button onclick="plotGraph()">Plot</button>
-<div id="plot"></div>
-</div>
-
-<!-- Matrix -->
-<div id="matrix" class="section">
-<h2>Matrix (NxN supported)</h2>
-<textarea id="matrixInput" placeholder='Example:
-[[1,2],[3,4]]'></textarea>
-<button onclick="determinant()">Determinant</button>
-<button onclick="inverse()">Inverse</button>
-<div id="matrixOutput" class="output"></div>
-</div>
-
 </div>
 
 <script>
+let display = document.getElementById("display");
 
-function showTab(id){
-    document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-    document.getElementById(id).style.display='block';
+function append(value) {
+    display.value += value;
 }
-showTab('calc');
 
-// Safe Calculator
-function calculate(){
-    try{
-        let expr = document.getElementById("calcInput").value;
-        let result = math.evaluate(expr);
-        document.getElementById("calcOutput").innerText = result;
-    }catch(e){
-        document.getElementById("calcOutput").innerText = "Error: " + e.message;
+function clearDisplay() {
+    display.value = "";
+}
+
+function backspace() {
+    display.value = display.value.slice(0, -1);
+}
+
+function calculate() {
+    try {
+        display.value = eval(display.value);
+    } catch {
+        display.value = "Error";
     }
 }
 
-// Symbolic
-function differentiate(){
-    try{
-        let expr = document.getElementById("symbolicInput").value;
-        let result = math.derivative(expr,'x').toString();
-        document.getElementById("symbolicOutput").innerText = result;
-    }catch(e){
-        document.getElementById("symbolicOutput").innerText="Error: " + e.message;
+// Keyboard support
+document.addEventListener("keydown", function(e) {
+    if (!isNaN(e.key) || "+-*/.%".includes(e.key)) {
+        display.value += e.key;
+    } else if (e.key === "Enter") {
+        calculate();
+    } else if (e.key === "Backspace") {
+        backspace();
     }
-}
-
-function integrate(){
-    try{
-        let expr = document.getElementById("symbolicInput").value;
-        let result = math.integral(expr,'x').toString();
-        document.getElementById("symbolicOutput").innerText = result;
-    }catch(e){
-        document.getElementById("symbolicOutput").innerText="Integration not supported for this expression.";
-    }
-}
-
-// Graph
-function plotGraph(){
-    try{
-        let expr = document.getElementById("graphInput").value;
-        let x=[], y=[];
-        for(let i=-10;i<=10;i+=0.1){
-            x.push(i);
-            y.push(math.evaluate(expr,{x:i}));
-        }
-        Plotly.newPlot('plot',[{x:x,y:y,type:'scatter'}]);
-    }catch(e){
-        alert("Graph Error: " + e.message);
-    }
-}
-
-// Matrix
-function determinant(){
-    try{
-        let m = math.matrix(JSON.parse(document.getElementById("matrixInput").value));
-        document.getElementById("matrixOutput").innerText = math.det(m);
-    }catch(e){
-        document.getElementById("matrixOutput").innerText="Matrix Error: " + e.message;
-    }
-}
-
-function inverse(){
-    try{
-        let m = math.matrix(JSON.parse(document.getElementById("matrixInput").value));
-        document.getElementById("matrixOutput").innerText = math.inv(m);
-    }catch(e){
-        document.getElementById("matrixOutput").innerText="Matrix Error: " + e.message;
-    }
-}
-
+});
 </script>
 
 </body>
